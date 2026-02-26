@@ -21,7 +21,7 @@ export function ContactSection() {
       {/* Background image */}
       <div
         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${assetUrl("backgound_contact.png")})` }}
+        style={{ backgroundImage: `url(${assetUrl("background_contact.png")})` }}
       />
       <div className="absolute inset-0 z-0 bg-background/50" />
       <div className="absolute inset-0 z-0 bg-gradient-to-b from-background/70 via-background/50 to-background/70" />
@@ -108,12 +108,6 @@ export function ContactSection() {
               )}
             </Button>
           </form>
-
-          {!settings.contactEmail && (
-            <p className="mt-8 text-center text-sm text-foreground/30 font-sans">
-              Configura tu email de contacto desde el panel de administracion.
-            </p>
-          )}
         </div>
       </div>
     </section>
