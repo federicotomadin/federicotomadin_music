@@ -1,4 +1,5 @@
 import { useData } from "@/contexts/DataContext"
+import { assetUrl } from "@/lib/utils"
 import { Play, Pause, ChevronDown } from "lucide-react"
 import { useRef, useState } from "react"
 
@@ -31,7 +32,7 @@ export function HeroSection() {
       {/* Background image */}
       <div className="absolute inset-0 z-0">
         <img
-          src="/background.jpg"
+          src={assetUrl("background.jpg")}
           alt="Federico Tomadin - Baterista"
           className="w-full h-full object-cover object-left-top brightness-110"
         />

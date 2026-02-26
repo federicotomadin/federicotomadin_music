@@ -1,4 +1,5 @@
 import { useData } from "@/contexts/DataContext"
+import { assetUrl } from "@/lib/utils"
 
 const DEFAULT_BIO = `Músico - Baterista - Compositor. Jazz moderno con raíces folclóricas sutilmente evocadas.
 
@@ -18,7 +19,7 @@ export function BioSection() {
       {/* Background image */}
       <div
         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url(/drums.png)" }}
+        style={{ backgroundImage: `url(${assetUrl("drums.png")})` }}
       />
       <div className="absolute inset-0 z-0 bg-background/60" />
       <div className="absolute inset-0 z-0 bg-gradient-to-r from-background/95 via-background/70 to-background/40" />

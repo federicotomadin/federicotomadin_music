@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useData } from "@/contexts/DataContext"
+import { assetUrl } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -20,7 +21,7 @@ export function ContactSection() {
       {/* Background image */}
       <div
         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url(/background_contact.png)" }}
+        style={{ backgroundImage: `url(${assetUrl("backgound_contact.png")})` }}
       />
       <div className="absolute inset-0 z-0 bg-background/50" />
       <div className="absolute inset-0 z-0 bg-gradient-to-b from-background/70 via-background/50 to-background/70" />

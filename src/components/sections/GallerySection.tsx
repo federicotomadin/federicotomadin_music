@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useData } from "@/contexts/DataContext"
+import { assetUrl } from "@/lib/utils"
 import {
   Dialog,
   DialogContent,
@@ -8,12 +9,12 @@ import {
 
 // Default gallery from public folder when no Firestore images
 const DEFAULT_GALLERY = [
-  { url: "/DSC00753.JPG", caption: "En escena" },
-  { url: "/DSC00756.JPG", caption: "Presentacion" },
-  { url: "/DSC00762.JPG", caption: "Concierto" },
-  { url: "/FedericoTomadinFestivalJazz.jpeg", caption: "Festival de Jazz Buenos Aires" },
-  { url: "/FotoGrupo.jpg", caption: "Federico Tomadin Grupo" },
-  { url: "/DSC00786.JPG", caption: "En vivo" },
+  { url: assetUrl("DSC00753.JPG"), caption: "En escena" },
+  { url: assetUrl("DSC00756.JPG"), caption: "Presentacion" },
+  { url: assetUrl("DSC00762.JPG"), caption: "Concierto" },
+  { url: assetUrl("FedericoTomadinFestivalJazz.jpeg"), caption: "Festival de Jazz Buenos Aires" },
+  { url: assetUrl("FotoGrupo.jpg"), caption: "Federico Tomadin Grupo" },
+  { url: assetUrl("DSC00786.JPG"), caption: "En vivo" },
 ]
 
 export function GallerySection() {

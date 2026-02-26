@@ -1,4 +1,5 @@
 import { useData } from "@/contexts/DataContext"
+import { assetUrl } from "@/lib/utils"
 import { ExternalLink } from "lucide-react"
 
 export function MusicSection() {
@@ -8,7 +9,7 @@ export function MusicSection() {
     {
       id: "tornasolado",
       title: "Tornasolado",
-      cover: "/Tornasolado-Frontal.jpg",
+      cover: assetUrl("Tornasolado-Frontal.jpg"),
       description: "Debut en estudio del Federico Tomadin Grupo. Composiciones originales con influencias del jazz moderno y raices folkloricas sutilmente evocadas.",
       credits: "Joaquin Sombielle, Cesar Rizzardi, Pablo Giordano, Camila Nebbia",
       spotifyUrl: settings.spotifyTornasoladoUrl || settings.spotifyUrl,
@@ -16,7 +17,7 @@ export function MusicSection() {
     {
       id: "album2",
       title: settings.album2Title || "Straight Street",
-      cover: settings.album2Cover || "/straight_street.png",
+      cover: settings.album2Cover || assetUrl("straight_street.png"),
       description: settings.album2Description || "Standards de jazz. Federico Tomadin en bateria.",
       credits: settings.album2Credits || "Yago Aguero - Guitarra y direccion, Benjamin Groisman - Contrabajo, Ramiro Sayas - Piano",
       spotifyUrl: settings.spotifyAlbum2Url,
