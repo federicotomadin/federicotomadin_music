@@ -16,8 +16,15 @@ export function ContactSection() {
   }
 
   return (
-    <section id="contacto" className="py-28 md:py-36 bg-background">
-      <div className="container mx-auto px-6 lg:px-12">
+    <section id="contacto" className="relative py-28 md:py-36 overflow-hidden">
+      {/* Background image */}
+      <div
+        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url(/background_contact.png)" }}
+      />
+      <div className="absolute inset-0 z-0 bg-background/50" />
+      <div className="absolute inset-0 z-0 bg-gradient-to-b from-background/70 via-background/50 to-background/70" />
+      <div className="container mx-auto px-6 lg:px-12 relative z-10">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-16">
             <div className="flex items-center justify-center gap-4 mb-10">
