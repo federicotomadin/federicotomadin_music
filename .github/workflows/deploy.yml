@@ -30,6 +30,16 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Verify base path in build
+        run: |
+          if ! grep -q 'federicotomadin_music' dist/index.html; then
+            echo "ERROR: dist/index.html missing base path - check vite.config.ts"
+            cat dist/index.html | head -15
+            exit 1
+          fi
 
       - name: Setup 404 for SPA routing
         run: cp dist/index.html dist/404.html
