@@ -28,7 +28,6 @@ const defaultGalleryImages: GalleryImage[] = []
 const defaultSettings: SiteSettings = {
   id: "settings",
   bio: "Músico - Baterista - Compositor. Jazz moderno con raíces folclóricas sutilmente evocadas.\n\nBaterista y compositor, nacido en Santa Fe, Argentina, en el año de 1986. Se formó en el instrumento con el baterista y percusionista Gonzalo Díaz en la ciudad de Santa Fe por el lapso de dos años. Tomó clases con Germán Boco, Pipi Piazzolla, Pablo Raposo, Carlos Lastra, Eloy Michelini y Jerónimo Carmona. Se desempeña artísticamente como baterista en diferentes formaciones de jazz local como de proyectos de música original. Lleva adelante actualmente el Federico Tomadin Grupo, en el que participan Joaquín Sombielle (piano), Pablo Giordano (contrabajo), Camila Nebbia (saxo tenor) y César Rizzardi (guitarra). En el año 2018 la formación ganó el concurso \"Primera Toma\" para presentar su primer disco en el Festival Internacional de Jazz de Buenos Aires.\n\nActualmente su nuevo grupo en formación, quinteto, está compuesto por Pablo Juárez (piano), Pablo Giordano (contrabajo), Martín Portella (saxo tenor) y Ramiro Barrios (guitarra).",
-  spotifyUrl: "",
   spotifyUrl: "https://open.spotify.com/album/2NkIuRArBsXOwizsVAYyFZ",
   spotifyTornasoladoUrl: "https://open.spotify.com/album/2NkIuRArBsXOwizsVAYyFZ",
   spotifyAlbum2Url: "https://open.spotify.com/album/0kgbLosxkFlzjfz6SPZYkW",

@@ -37,7 +37,7 @@ export function MusicSection() {
         </h2>
 
         <div className="space-y-20 max-w-5xl">
-          {albums.map((album, index) => (
+          {albums.map((album) => (
             <div
               key={album.id}
               className="group grid md:grid-cols-[280px_1fr] gap-10 lg:gap-14 items-start"

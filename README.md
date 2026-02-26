@@ -38,12 +38,29 @@ Diseño inspirado en [federicotomadin.com](https://www.federicotomadin.com/) (Wi
 
 5. Sin Firebase configurado, el sitio usa **modo demo** con localStorage.
 
+## GitHub Pages
+
+El sitio está configurado para publicarse en GitHub Pages. La URL será `https://<tu-usuario>.github.io/federicotomadin_music/`.
+
+**Configurar en GitHub:**
+1. Ir a **Settings → Pages** del repositorio
+2. En "Build and deployment", elegir **GitHub Actions** como fuente
+3. Al hacer push a `main`, el workflow despliega automáticamente
+
+**Despliegue manual (alternativa):**
+```bash
+npm run deploy
+```
+Esto construye el proyecto y sube el contenido a la rama `gh-pages`. Si usas este método, en Settings → Pages elige la rama `gh-pages` como fuente.
+
+**Si tu repositorio tiene otro nombre:** edita `base` en `vite.config.ts` (por ejemplo `/mi-repo/`).
+
 ## Scripts
 
 - `npm run dev` - Desarrollo
 - `npm run build` - Build para producción
 - `npm run preview` - Vista previa del build
-- `npm run deploy` - Desplegar a gh-pages
+- `npm run deploy` - Desplegar a GitHub Pages (rama gh-pages)
 
 ## Estructura
 
