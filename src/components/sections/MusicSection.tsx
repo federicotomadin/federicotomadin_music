@@ -51,9 +51,6 @@ export function MusicSection() {
                 <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-500" />
               </div>
               <div className="space-y-5 py-2">
-                <span className="text-muted-foreground text-xs font-sans uppercase tracking-[0.2em]">
-                  {`Album ${String(index + 1).padStart(2, "0")}`}
-                </span>
                 <h3 className="text-2xl md:text-3xl font-serif font-light text-foreground">
                   {album.title}
                 </h3>

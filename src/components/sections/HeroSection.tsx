@@ -58,37 +58,43 @@ export function HeroSection() {
               <span className="block text-primary italic">Tomadin</span>
             </h1>
 
-            {/* Featured event or description */}
-            <p className="text-foreground/50 text-base md:text-lg leading-relaxed max-w-lg font-sans font-light">
-              {latestEvent
-                ? latestEvent.title
-                : "Jazz moderno con raices folkloricas sutilmente evocadas"}
-            </p>
+            {/* Featured event */}
+            {latestEvent && (
+              <p className="text-foreground/50 text-base md:text-lg leading-relaxed max-w-lg font-sans font-light">
+                {latestEvent.title}
+              </p>
+            )}
 
-            {/* Music player */}
-            <div className="flex items-center gap-5 pt-4">
-              <button
-                onClick={handlePlay}
-                disabled={!featuredTrack?.url}
-                className="w-14 h-14 rounded-full border border-foreground/20 flex items-center justify-center hover:border-primary hover:bg-primary/10 transition-all duration-300 shrink-0 disabled:opacity-30 disabled:cursor-not-allowed group"
-              >
-                {isPlaying ? (
-                  <Pause className="h-5 w-5 text-foreground group-hover:text-primary transition-colors" />
-                ) : (
-                  <Play className="h-5 w-5 text-foreground group-hover:text-primary transition-colors ml-0.5" />
-                )}
-              </button>
-              <div className="flex-1 min-w-0">
-                <p className="text-foreground text-sm font-medium truncate">
-                  {featuredTrack ? `${featuredTrack.title}` : "Un Recuerdo"}
-                </p>
-                <p className="text-foreground/40 text-xs font-sans mt-1">
-                  {featuredTrack ? featuredTrack.artist : "Federico Tomadin"}{" "}
-                  <span className="text-foreground/20 mx-1">{"/"}</span>{" "}
-                  {featuredTrack?.duration || "08:33"}
-                </p>
+            {/* Music player - only show when there's an active track */}
+            {featuredTrack && (
+              <div className="flex items-center gap-5 pt-4">
+                <button
+                  onClick={handlePlay}
+                  disabled={!featuredTrack.url}
+                  className="w-14 h-14 rounded-full border border-foreground/20 flex items-center justify-center hover:border-primary hover:bg-primary/10 transition-all duration-300 shrink-0 disabled:opacity-30 disabled:cursor-not-allowed group"
+                >
+                  {isPlaying ? (
+                    <Pause className="h-5 w-5 text-foreground group-hover:text-primary transition-colors" />
+                  ) : (
+                    <Play className="h-5 w-5 text-foreground group-hover:text-primary transition-colors ml-0.5" />
+                  )}
+                </button>
+                <div className="flex-1 min-w-0">
+                  <p className="text-foreground text-sm font-medium truncate">
+                    {featuredTrack.title}
+                  </p>
+                  <p className="text-foreground/40 text-xs font-sans mt-1">
+                    {featuredTrack.artist}
+                    {featuredTrack.duration && (
+                      <>
+                        <span className="text-foreground/20 mx-1">{"/"}</span>
+                        {featuredTrack.duration}
+                      </>
+                    )}
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
             <audio ref={audioRef} onEnded={() => setIsPlaying(false)} />
           </div>
         </div>
