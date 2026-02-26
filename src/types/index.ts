@@ -41,6 +41,11 @@ export interface SiteSettings {
   id: string
   bio?: string
   spotifyUrl?: string
+  spotifyTornasoladoUrl?: string
+  spotifyAlbum2Url?: string
+  album2Title?: string
+  album2Cover?: string
+  album2Description?: string
   youtubeUrl?: string
   appleMusicUrl?: string
   instagramUrl?: string

@@ -34,12 +34,12 @@ export function HeroSection() {
       {/* Background image - drummer photo */}
       <div className="absolute inset-0 z-0">
         <img
-          src="/DSC00753.JPG"
+          src="/background.jpg"
           alt="Federico Tomadin - Baterista"
-          className="w-full h-full object-cover object-center"
+          className="w-full h-full object-cover object-left-top brightness-150"
         />
-        <div className="absolute inset-0 bg-black/60" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
+        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/35 to-transparent" />
       </div>
 
       <div className="relative z-10 flex-1 flex flex-col lg:flex-row">

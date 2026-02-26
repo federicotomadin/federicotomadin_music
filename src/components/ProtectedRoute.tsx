@@ -8,7 +8,6 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, loading } = useAuth()
   const location = useLocation()
-  const isDemoMode = localStorage.getItem("ft_music_demo_auth") === "true"
 
   if (loading) {
     return (
@@ -17,7 +16,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
       </div>
     )
   }
-  if (!user && !isDemoMode) {
+  if (!user) {
     return <Navigate to="/panel/login" state={{ from: location }} replace />
   }
   return <>{children}</>

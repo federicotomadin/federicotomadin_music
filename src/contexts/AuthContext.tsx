@@ -1,11 +1,12 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react"
-import { User, signInWithEmailAndPassword, signOut as firebaseSignOut, onAuthStateChanged } from "firebase/auth"
+import { User, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut as firebaseSignOut, onAuthStateChanged } from "firebase/auth"
 import { auth } from "@/lib/firebase"
 
 interface AuthContextType {
   user: User | null
   loading: boolean
   signIn: (email: string, password: string) => Promise<void>
+  signInWithGoogle: () => Promise<void>
   signOut: () => Promise<void>
 }
 
@@ -34,9 +35,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     if (!isFirebaseConfigured()) {
-      throw new Error("Firebase no está configurado. Usá el modo demo.")
+      throw new Error("Firebase no está configurado.")
     }
     await signInWithEmailAndPassword(auth, email, password)
+  }
+
+  const signInWithGoogle = async () => {
+    if (!isFirebaseConfigured()) {
+      throw new Error("Firebase no está configurado.")
+    }
+    await signInWithPopup(auth, new GoogleAuthProvider())
   }
 
   const signOut = async () => {
@@ -46,7 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signInWithGoogle, signOut }}>
       {children}
     </AuthContext.Provider>
   )

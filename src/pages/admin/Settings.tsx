@@ -11,6 +11,11 @@ export function AdminSettings() {
   const [form, setForm] = useState({
     bio: "",
     spotifyUrl: "",
+    spotifyTornasoladoUrl: "",
+    spotifyAlbum2Url: "",
+    album2Title: "",
+    album2Cover: "",
+    album2Description: "",
     youtubeUrl: "",
     appleMusicUrl: "",
     instagramUrl: "",
@@ -23,6 +28,11 @@ export function AdminSettings() {
     setForm({
       bio: settings.bio || "",
       spotifyUrl: settings.spotifyUrl || "",
+      spotifyTornasoladoUrl: settings.spotifyTornasoladoUrl || "",
+      spotifyAlbum2Url: settings.spotifyAlbum2Url || "",
+      album2Title: settings.album2Title || "Straight Street",
+      album2Cover: settings.album2Cover || "",
+      album2Description: settings.album2Description || "",
       youtubeUrl: settings.youtubeUrl || "",
       appleMusicUrl: settings.appleMusicUrl || "",
       instagramUrl: settings.instagramUrl || "",
@@ -67,8 +77,37 @@ export function AdminSettings() {
 
         <Card className="mt-6">
           <CardHeader>
+            <CardTitle>Álbumes - Spotify</CardTitle>
+            <CardDescription>Links de Spotify para cada álbum (botón "Obtener álbum")</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label>Tornasolado — Spotify URL</Label>
+              <Input value={form.spotifyTornasoladoUrl} onChange={(e) => setForm((f) => ({ ...f, spotifyTornasoladoUrl: e.target.value }))} placeholder="https://open.spotify.com/album/..." />
+            </div>
+            <div className="space-y-2">
+              <Label>Álbum 2 — Título</Label>
+              <Input value={form.album2Title} onChange={(e) => setForm((f) => ({ ...f, album2Title: e.target.value }))} placeholder="Straight Street" />
+            </div>
+            <div className="space-y-2">
+              <Label>Álbum 2 — Spotify URL</Label>
+              <Input value={form.spotifyAlbum2Url} onChange={(e) => setForm((f) => ({ ...f, spotifyAlbum2Url: e.target.value }))} placeholder="https://open.spotify.com/album/..." />
+            </div>
+            <div className="space-y-2">
+              <Label>Álbum 2 — URL de portada</Label>
+              <Input value={form.album2Cover} onChange={(e) => setForm((f) => ({ ...f, album2Cover: e.target.value }))} placeholder="/album2-cover.jpg o URL de imagen" />
+            </div>
+            <div className="space-y-2">
+              <Label>Álbum 2 — Descripción</Label>
+              <Input value={form.album2Description} onChange={(e) => setForm((f) => ({ ...f, album2Description: e.target.value }))} placeholder="Standards de jazz..." />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="mt-6">
+          <CardHeader>
             <CardTitle>Redes Sociales</CardTitle>
-            <CardDescription>URLs que aparecen en header y footer</CardDescription>
+            <CardDescription>URL general de Spotify (header/footer). Los álbumes tienen sus propios links arriba.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
