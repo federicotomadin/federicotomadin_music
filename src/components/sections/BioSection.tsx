@@ -10,28 +10,47 @@ export function BioSection() {
   const { settings } = useData()
   const bio = settings.bio || DEFAULT_BIO
 
+  // Split bio into paragraphs for better visual treatment
+  const paragraphs = bio.split("\n").filter((p) => p.trim())
+
   return (
-    <section id="bio" className="py-24 bg-background">
-      <div className="container mx-auto px-4 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Left: Bio text (federicotomadin.com BIO page layout) */}
+    <section id="bio" className="py-28 md:py-36 bg-background">
+      <div className="container mx-auto px-6 lg:px-12">
+        <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-start">
+          {/* Left: Bio text */}
           <div>
-            <div className="w-12 h-0.5 bg-primary mb-8" />
-            <h2 className="text-2xl md:text-3xl font-serif font-light mb-8 text-foreground">
+            <div className="flex items-center gap-4 mb-10">
+              <div className="section-line" />
+              <span className="text-primary text-xs font-sans font-medium uppercase tracking-[0.25em]">
+                Biografia
+              </span>
+            </div>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-light mb-10 text-foreground leading-tight text-balance">
               Bio
             </h2>
-            <p className="text-foreground/90 leading-relaxed whitespace-pre-line">
-              {bio}
-            </p>
+            <div className="space-y-6">
+              {paragraphs.map((paragraph, index) => (
+                <p
+                  key={index}
+                  className="text-foreground/70 text-base leading-relaxed font-sans font-light"
+                >
+                  {paragraph}
+                </p>
+              ))}
+            </div>
           </div>
 
-          {/* Right: Photo (Brad Mehldau / federicotomadin.com style) */}
-          <div className="relative">
-            <img
-              src="/FotoGrupo.jpg"
-              alt="Federico Tomadin Grupo"
-              className="w-full aspect-[4/3] object-cover rounded-lg"
-            />
+          {/* Right: Photo */}
+          <div className="relative lg:sticky lg:top-28">
+            <div className="relative overflow-hidden rounded-lg">
+              <img
+                src="/FotoGrupo.jpg"
+                alt="Federico Tomadin Grupo"
+                className="w-full aspect-[4/5] object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
+            </div>
+            <div className="absolute -bottom-4 -right-4 w-24 h-24 border border-primary/20 rounded-lg -z-10" />
           </div>
         </div>
       </div>

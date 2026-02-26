@@ -1,9 +1,5 @@
 import { useData } from "@/contexts/DataContext"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Calendar, MapPin } from "lucide-react"
-
-const BASE_URL = import.meta.env.BASE_URL
+import { Calendar, MapPin, ArrowRight } from "lucide-react"
 
 export function EventsSection() {
   const { events, loading } = useData()
@@ -17,69 +13,79 @@ export function EventsSection() {
     })
 
   return (
-    <section id="conciertos" className="py-24 bg-muted/20">
-      <div className="container mx-auto px-4 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-serif font-light mb-4">
+    <section id="conciertos" className="py-28 md:py-36 bg-background">
+      <div className="container mx-auto px-6 lg:px-12">
+        <div className="flex items-center gap-4 mb-10">
+          <div className="section-line" />
+          <span className="text-primary text-xs font-sans font-medium uppercase tracking-[0.25em]">
+            En Vivo
+          </span>
+        </div>
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-20">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-light text-foreground leading-tight">
             Conciertos
           </h2>
-          <p className="text-muted-foreground max-w-xl mx-auto">
-            Próximas fechas y presentaciones en vivo
+          <p className="text-foreground/50 max-w-md font-sans font-light text-base leading-relaxed">
+            Proximas fechas y presentaciones en vivo
           </p>
         </div>
 
         {loading ? (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto" />
+          <div className="flex justify-center py-16">
+            <div className="w-8 h-8 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
           </div>
         ) : activeEvents.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground mb-6">
+          <div className="text-center py-16 border border-border/50 rounded-lg bg-card/50">
+            <p className="text-foreground/50 font-sans font-light text-base mb-4">
               No hay conciertos programados en este momento.
             </p>
-            <p className="text-sm text-muted-foreground">
-              Bares Notables de Buenos Aires 2019 • Festival de Jazz de Buenos Aires Noviembre 2018
+            <p className="text-sm text-foreground/30 font-sans">
+              Bares Notables de Buenos Aires 2019 / Festival de Jazz de Buenos Aires Noviembre 2018
             </p>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="space-y-px">
             {activeEvents.map((event) => (
-              <Card key={event.id} className="overflow-hidden">
-                <div className="relative h-48 overflow-hidden">
-                  <img
-                    src={event.image || `${BASE_URL}placeholder.svg`}
-                    alt={event.title}
-                    className="w-full h-full object-cover"
-                  />
+              <div
+                key={event.id}
+                className="group grid md:grid-cols-[1fr_2fr_auto] gap-6 md:gap-10 items-center py-8 border-b border-border/50 hover:bg-card/50 transition-colors duration-300 px-4 -mx-4 rounded-lg"
+              >
+                <div className="flex items-center gap-4">
+                  <Calendar className="h-4 w-4 text-primary shrink-0" />
+                  <span className="text-foreground/60 text-sm font-sans font-medium tracking-wide">
+                    {event.date}
+                  </span>
                 </div>
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-4">{event.title}</h3>
-                  <div className="space-y-2 text-muted-foreground text-sm">
+
+                <div className="space-y-2">
+                  <h3 className="text-lg md:text-xl font-serif font-medium text-foreground group-hover:text-primary transition-colors duration-300">
+                    {event.title}
+                  </h3>
+                  {event.location && (
                     <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 shrink-0" />
-                      <span>{event.date}</span>
+                      <MapPin className="h-3.5 w-3.5 text-foreground/30 shrink-0" />
+                      <span className="text-foreground/40 text-sm font-sans">{event.location}</span>
                     </div>
-                    {event.location && (
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 shrink-0" />
-                        <span>{event.location}</span>
-                      </div>
-                    )}
-                  </div>
+                  )}
                   {event.description && (
-                    <p className="mt-4 text-sm text-muted-foreground line-clamp-3">
+                    <p className="text-sm text-foreground/40 font-sans font-light line-clamp-2 leading-relaxed">
                       {event.description}
                     </p>
                   )}
-                  {event.ticketUrl && (
-                    <Button className="mt-4 w-full" asChild>
-                      <a href={event.ticketUrl} target="_blank" rel="noopener noreferrer">
-                        Comprar Entradas
-                      </a>
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
+                </div>
+
+                {event.ticketUrl && (
+                  <a
+                    href={event.ticketUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 font-medium transition-colors duration-300"
+                  >
+                    <span className="hidden md:inline">Entradas</span>
+                    <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                  </a>
+                )}
+              </div>
             ))}
           </div>
         )}
