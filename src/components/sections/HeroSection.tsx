@@ -33,11 +33,11 @@ export function HeroSection() {
         <img
           src="/background.jpg"
           alt="Federico Tomadin - Baterista"
-          className="w-full h-full object-cover object-left-top"
+          className="w-full h-full object-cover object-left-top brightness-110"
         />
-        <div className="absolute inset-0 bg-black/50" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-black/30" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
+        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#131211] via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent" />
       </div>
 
       {/* Content */}

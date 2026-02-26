@@ -6,25 +6,25 @@
   --font-serif: "Cormorant Garamond", "Georgia", serif;
   --font-script: "Great Vibes", cursive;
 
-  /* Refined dark palette */
-  --color-background: #0a0a0a;
-  --color-foreground: #ebebeb;
-  --color-card: #141414;
-  --color-card-foreground: #ebebeb;
-  --color-popover: #141414;
-  --color-popover-foreground: #ebebeb;
+  /* Warm dark palette - lighter feel */
+  --color-background: #131211;
+  --color-foreground: #f0ede8;
+  --color-card: #1a1917;
+  --color-card-foreground: #f0ede8;
+  --color-popover: #1a1917;
+  --color-popover-foreground: #f0ede8;
   --color-primary: #c8a55a;
-  --color-primary-foreground: #0a0a0a;
-  --color-secondary: #1c1c1c;
-  --color-secondary-foreground: #ebebeb;
-  --color-muted: #161616;
-  --color-muted-foreground: #8a8a8a;
+  --color-primary-foreground: #131211;
+  --color-secondary: #211f1c;
+  --color-secondary-foreground: #f0ede8;
+  --color-muted: #1e1d1a;
+  --color-muted-foreground: #9a958c;
   --color-accent: #c8a55a;
-  --color-accent-foreground: #0a0a0a;
+  --color-accent-foreground: #131211;
   --color-destructive: #dc2626;
   --color-destructive-foreground: #ffffff;
-  --color-border: #222222;
-  --color-input: #222222;
+  --color-border: #2a2825;
+  --color-input: #2a2825;
   --color-ring: #c8a55a;
   --radius: 0.5rem;
 }
