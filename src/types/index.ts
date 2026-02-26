@@ -46,6 +46,7 @@ export interface SiteSettings {
   album2Title?: string
   album2Cover?: string
   album2Description?: string
+  album2Credits?: string
   youtubeUrl?: string
   appleMusicUrl?: string
   instagramUrl?: string

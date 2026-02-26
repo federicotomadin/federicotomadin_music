@@ -20,6 +20,7 @@ export function MusicSection() {
       title: settings.album2Title || "Straight Street",
       cover: settings.album2Cover || "/straight_street.png",
       description: settings.album2Description || "Standards de jazz. Federico Tomadin en batería.",
+      credits: settings.album2Credits || "Yago Agüero - Guitarra y dirección, Benjamin Groisman - Contrabajo, Ramiro Sayas - Piano",
       spotifyUrl: settings.spotifyAlbum2Url,
     },
   ]

@@ -16,6 +16,7 @@ export function AdminSettings() {
     album2Title: "",
     album2Cover: "",
     album2Description: "",
+    album2Credits: "",
     youtubeUrl: "",
     appleMusicUrl: "",
     instagramUrl: "",
@@ -33,6 +34,7 @@ export function AdminSettings() {
       album2Title: settings.album2Title || "Straight Street",
       album2Cover: settings.album2Cover || "",
       album2Description: settings.album2Description || "",
+      album2Credits: settings.album2Credits || "",
       youtubeUrl: settings.youtubeUrl || "",
       appleMusicUrl: settings.appleMusicUrl || "",
       instagramUrl: settings.instagramUrl || "",
@@ -100,6 +102,10 @@ export function AdminSettings() {
             <div className="space-y-2">
               <Label>Álbum 2 — Descripción</Label>
               <Input value={form.album2Description} onChange={(e) => setForm((f) => ({ ...f, album2Description: e.target.value }))} placeholder="Standards de jazz..." />
+            </div>
+            <div className="space-y-2">
+              <Label>Álbum 2 — Integrantes</Label>
+              <Input value={form.album2Credits} onChange={(e) => setForm((f) => ({ ...f, album2Credits: e.target.value }))} placeholder="Yago Agüero - Guitarra, Benjamin Groisman - Contrabajo..." />
             </div>
           </CardContent>
         </Card>
