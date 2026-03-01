@@ -1,6 +1,5 @@
 # Federico Tomadin - Music
 
-
 Sitio web personal para músico, baterista y compositor. Single page con Firebase y Firestore, siguiendo la estructura de [casa_ramayon](https://github.com/federicotomadin/casa_ramayon).
 
 ## Características
