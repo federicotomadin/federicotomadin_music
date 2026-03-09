@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import {
   Dialog,
   DialogContent,
@@ -12,7 +13,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog"
-import { Plus, Pencil, Trash2 } from "lucide-react"
+import { Plus, Pencil, Trash2, AlertCircle, CheckCircle2 } from "lucide-react"
 import type { EventFormData } from "@/types"
 
 const BASE_URL = import.meta.env.BASE_URL
@@ -31,6 +32,8 @@ export function AdminEvents() {
     isActive: true,
   })
   const [uploading, setUploading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
 
   const reset = () => {
     setForm({
@@ -45,8 +48,20 @@ export function AdminEvents() {
     setEditing(null)
   }
 
+  const showMessage = (msg: string, isError: boolean) => {
+    if (isError) {
+      setError(msg)
+      setSuccess(null)
+    } else {
+      setSuccess(msg)
+      setError(null)
+    }
+    setTimeout(() => { setError(null); setSuccess(null) }, 5000)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError(null)
     try {
       if (editing) {
         await updateEvent(editing.id, form)
@@ -55,8 +70,10 @@ export function AdminEvents() {
       }
       setOpen(false)
       reset()
+      showMessage(editing ? "Evento actualizado" : "Evento creado", false)
     } catch (err) {
       console.error(err)
+      showMessage(`Error al guardar: ${err instanceof Error ? err.message : "Error desconocido"}`, true)
     }
   }
 
@@ -78,11 +95,13 @@ export function AdminEvents() {
     const file = e.target.files?.[0]
     if (!file) return
     setUploading(true)
+    setError(null)
     try {
       const url = await uploadImage(file, "events")
       setForm((f) => ({ ...f, image: url }))
     } catch (err) {
       console.error(err)
+      showMessage(`Error al subir imagen: ${err instanceof Error ? err.message : "Error desconocido"}`, true)
     } finally {
       setUploading(false)
     }
@@ -90,6 +109,18 @@ export function AdminEvents() {
 
   return (
     <div className="space-y-6">
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+      {success && (
+        <Alert>
+          <CheckCircle2 className="h-4 w-4 text-green-500" />
+          <AlertDescription className="text-green-500">{success}</AlertDescription>
+        </Alert>
+      )}
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-semibold">Eventos</h2>

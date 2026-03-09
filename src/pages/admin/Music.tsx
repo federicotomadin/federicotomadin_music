@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import {
   Dialog,
   DialogContent,
@@ -11,7 +12,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog"
-import { Plus, Pencil, Trash2 } from "lucide-react"
+import { Plus, Pencil, Trash2, AlertCircle, CheckCircle2 } from "lucide-react"
 import type { MusicTrackFormData } from "@/types"
 
 const BASE_URL = import.meta.env.BASE_URL
@@ -31,6 +32,14 @@ export function AdminMusic() {
     order: 0,
   })
   const [uploading, setUploading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
+
+  const showMessage = (msg: string, isError: boolean) => {
+    if (isError) { setError(msg); setSuccess(null) }
+    else { setSuccess(msg); setError(null) }
+    setTimeout(() => { setError(null); setSuccess(null) }, 5000)
+  }
 
   const reset = () => {
     setForm({
@@ -56,8 +65,10 @@ export function AdminMusic() {
       }
       setOpen(false)
       reset()
+      showMessage(editing ? "Track actualizado" : "Track creado", false)
     } catch (err) {
       console.error(err)
+      showMessage(`Error al guardar: ${err instanceof Error ? err.message : "Error desconocido"}`, true)
     }
   }
 
@@ -85,6 +96,7 @@ export function AdminMusic() {
       setForm((f) => ({ ...f, coverImage: url }))
     } catch (err) {
       console.error(err)
+      showMessage(`Error al subir portada: ${err instanceof Error ? err.message : "Error desconocido"}`, true)
     } finally {
       setUploading(false)
     }
@@ -99,6 +111,7 @@ export function AdminMusic() {
       setForm((f) => ({ ...f, url }))
     } catch (err) {
       console.error(err)
+      showMessage(`Error al subir audio: ${err instanceof Error ? err.message : "Error desconocido"}`, true)
     } finally {
       setUploading(false)
     }
@@ -106,6 +119,18 @@ export function AdminMusic() {
 
   return (
     <div className="space-y-6">
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+      {success && (
+        <Alert>
+          <CheckCircle2 className="h-4 w-4 text-green-500" />
+          <AlertDescription className="text-green-500">{success}</AlertDescription>
+        </Alert>
+      )}
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-semibold">Música</h2>

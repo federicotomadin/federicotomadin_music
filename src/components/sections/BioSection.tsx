@@ -21,8 +21,8 @@ export function BioSection() {
         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${assetUrl("drums.png")})` }}
       />
-      <div className="absolute inset-0 z-0 bg-background/60" />
-      <div className="absolute inset-0 z-0 bg-gradient-to-r from-background/95 via-background/70 to-background/40" />
+      <div className="absolute inset-0 z-0 bg-background/40 md:bg-background/60" />
+      <div className="absolute inset-0 z-0 bg-gradient-to-b md:bg-gradient-to-r from-background/90 via-background/60 md:via-background/70 to-background/30 md:to-background/40" />
       <div className="container mx-auto px-6 lg:px-12 relative z-10">
         <div className="max-w-2xl">
           <div className="flex items-center gap-4 mb-10">

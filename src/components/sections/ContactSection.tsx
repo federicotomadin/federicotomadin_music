@@ -23,8 +23,8 @@ export function ContactSection() {
         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${assetUrl("background_contact.png")})` }}
       />
-      <div className="absolute inset-0 z-0 bg-background/50" />
-      <div className="absolute inset-0 z-0 bg-gradient-to-b from-background/70 via-background/50 to-background/70" />
+      <div className="absolute inset-0 z-0 bg-background/35 md:bg-background/50" />
+      <div className="absolute inset-0 z-0 bg-gradient-to-b from-background/60 md:from-background/70 via-background/35 md:via-background/50 to-background/60 md:to-background/70" />
       <div className="container mx-auto px-6 lg:px-12 relative z-10">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-16">

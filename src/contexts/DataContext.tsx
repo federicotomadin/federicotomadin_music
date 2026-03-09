@@ -181,6 +181,18 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }
   }, [useLocalStorage])
 
+  const saveLocal = <T extends { id?: string }>(key: string, next: T[], setItems: Dispatch<SetStateAction<T[]>>) => {
+    setItems(next)
+    saveToLocalStorage(key, next)
+  }
+
+  const fallbackToLocal = () => {
+    if (!useLocalStorage) {
+      console.warn("Firestore write failed, falling back to localStorage")
+      setUseLocalStorage(true)
+    }
+  }
+
   const createItem = async <T extends { id?: string }>(
     col: string,
     key: string,
@@ -195,15 +207,20 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }
     if (useLocalStorage) {
       const id = Date.now().toString()
-      const next = [...items, { ...item, id }] as T[]
-      setItems(next)
-      saveToLocalStorage(key, next)
+      saveLocal(key, [...items, { ...item, id }] as T[], setItems)
     } else {
-      await addDoc(collection(db, col), {
-        ...item,
-        createdAt: Timestamp.now(),
-        updatedAt: Timestamp.now(),
-      })
+      try {
+        await addDoc(collection(db, col), {
+          ...item,
+          createdAt: Timestamp.now(),
+          updatedAt: Timestamp.now(),
+        })
+      } catch (err) {
+        console.error(`Firestore create failed for ${col}:`, err)
+        fallbackToLocal()
+        const id = Date.now().toString()
+        saveLocal(key, [...items, { ...item, id }] as T[], setItems)
+      }
     }
   }
 
@@ -220,13 +237,21 @@ export function DataProvider({ children }: { children: ReactNode }) {
       const next = items.map((i) =>
         i.id === id ? { ...i, ...updateData } : i
       ) as T[]
-      setItems(next)
-      saveToLocalStorage(key, next)
+      saveLocal(key, next, setItems)
     } else {
-      await updateDoc(doc(db, col, id), {
-        ...updateData,
-        updatedAt: Timestamp.now(),
-      })
+      try {
+        await updateDoc(doc(db, col, id), {
+          ...updateData,
+          updatedAt: Timestamp.now(),
+        })
+      } catch (err) {
+        console.error(`Firestore update failed for ${col}:`, err)
+        fallbackToLocal()
+        const next = items.map((i) =>
+          i.id === id ? { ...i, ...updateData } : i
+        ) as T[]
+        saveLocal(key, next, setItems)
+      }
     }
   }
 
@@ -239,10 +264,16 @@ export function DataProvider({ children }: { children: ReactNode }) {
   ) => {
     if (useLocalStorage) {
       const next = items.filter((i) => i.id !== id) as T[]
-      setItems(next)
-      saveToLocalStorage(key, next)
+      saveLocal(key, next, setItems)
     } else {
-      await deleteDoc(doc(db, col, id))
+      try {
+        await deleteDoc(doc(db, col, id))
+      } catch (err) {
+        console.error(`Firestore delete failed for ${col}:`, err)
+        fallbackToLocal()
+        const next = items.filter((i) => i.id !== id) as T[]
+        saveLocal(key, next, setItems)
+      }
     }
   }
 
@@ -273,15 +304,22 @@ export function DataProvider({ children }: { children: ReactNode }) {
       setSettings((prev) => ({ ...prev, ...updateData }))
       saveToLocalStorage(STORAGE_KEYS.settings, { ...settings, ...updateData })
     } else {
-      const settingsRef = collection(db, "settings")
-      const snap = await getDocs(settingsRef)
-      if (snap.empty) {
-        await addDoc(settingsRef, { ...updateData, updatedAt: Timestamp.now() })
-      } else {
-        await updateDoc(snap.docs[0].ref, {
-          ...updateData,
-          updatedAt: Timestamp.now(),
-        })
+      try {
+        const settingsRef = collection(db, "settings")
+        const snap = await getDocs(settingsRef)
+        if (snap.empty) {
+          await addDoc(settingsRef, { ...updateData, updatedAt: Timestamp.now() })
+        } else {
+          await updateDoc(snap.docs[0].ref, {
+            ...updateData,
+            updatedAt: Timestamp.now(),
+          })
+        }
+      } catch (err) {
+        console.error("Firestore settings update failed:", err)
+        fallbackToLocal()
+        setSettings((prev) => ({ ...prev, ...updateData }))
+        saveToLocalStorage(STORAGE_KEYS.settings, { ...settings, ...updateData })
       }
     }
   }

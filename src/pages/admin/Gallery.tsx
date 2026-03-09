@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import {
   Dialog,
   DialogContent,
@@ -11,7 +12,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog"
-import { Plus, Pencil, Trash2 } from "lucide-react"
+import { Plus, Pencil, Trash2, AlertCircle, CheckCircle2 } from "lucide-react"
 import type { GalleryImageFormData } from "@/types"
 
 const BASE_URL = import.meta.env.BASE_URL
@@ -28,6 +29,14 @@ export function AdminGallery() {
     isActive: true,
   })
   const [uploading, setUploading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
+
+  const showMessage = (msg: string, isError: boolean) => {
+    if (isError) { setError(msg); setSuccess(null) }
+    else { setSuccess(msg); setError(null) }
+    setTimeout(() => { setError(null); setSuccess(null) }, 5000)
+  }
 
   const reset = () => {
     setForm({
@@ -50,8 +59,10 @@ export function AdminGallery() {
       }
       setOpen(false)
       reset()
+      showMessage(editing ? "Imagen actualizada" : "Imagen agregada", false)
     } catch (err) {
       console.error(err)
+      showMessage(`Error al guardar: ${err instanceof Error ? err.message : "Error desconocido"}`, true)
     }
   }
 
@@ -76,6 +87,7 @@ export function AdminGallery() {
       setForm((f) => ({ ...f, url }))
     } catch (err) {
       console.error(err)
+      showMessage(`Error al subir imagen: ${err instanceof Error ? err.message : "Error desconocido"}`, true)
     } finally {
       setUploading(false)
     }
@@ -83,6 +95,18 @@ export function AdminGallery() {
 
   return (
     <div className="space-y-6">
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+      {success && (
+        <Alert>
+          <CheckCircle2 className="h-4 w-4 text-green-500" />
+          <AlertDescription className="text-green-500">{success}</AlertDescription>
+        </Alert>
+      )}
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-semibold">Galería</h2>
