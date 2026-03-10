@@ -1,8 +1,10 @@
+import { useState } from "react"
 import { useData } from "@/contexts/DataContext"
-import { Calendar, MapPin, ArrowRight } from "lucide-react"
+import { Calendar, MapPin, ArrowRight, X } from "lucide-react"
 
 export function EventsSection() {
   const { events, loading } = useData()
+  const [expandedImage, setExpandedImage] = useState<{ src: string; alt: string } | null>(null)
 
   const activeEvents = events
     .filter((e) => e.isActive)
@@ -44,23 +46,38 @@ export function EventsSection() {
             </p>
           </div>
         ) : (
-          <div className="space-y-px">
+          <div className="space-y-6">
             {activeEvents.map((event) => (
               <div
                 key={event.id}
-                className="group grid md:grid-cols-[1fr_2fr_auto] gap-6 md:gap-10 items-center py-8 border-b border-border/50 hover:bg-card/50 transition-colors duration-300 px-4 -mx-4 rounded-lg"
+                className="group grid grid-cols-1 md:grid-cols-[auto_1fr_auto] gap-6 md:gap-10 items-center py-8 border-b border-border/50 hover:bg-card/50 transition-colors duration-300 px-4 -mx-4 rounded-lg"
               >
-                <div className="flex items-center gap-4">
-                  <Calendar className="h-4 w-4 text-primary shrink-0" />
-                  <span className="text-foreground/60 text-sm font-sans font-medium tracking-wide">
-                    {event.date}
-                  </span>
-                </div>
+                {event.image && (
+                  <button
+                    type="button"
+                    onClick={() => setExpandedImage({ src: event.image, alt: event.title })}
+                    className="cursor-zoom-in overflow-hidden rounded-lg"
+                  >
+                    <img
+                      src={event.image}
+                      alt={event.title}
+                      className="w-full md:w-40 h-48 md:h-28 object-cover rounded-lg transition-transform duration-300 hover:scale-105"
+                    />
+                  </button>
+                )}
 
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <h3 className="text-lg md:text-xl font-serif font-medium text-foreground group-hover:text-primary transition-colors duration-300">
                     {event.title}
                   </h3>
+                  {event.date && (
+                    <div className="flex items-center gap-3">
+                      <Calendar className="h-4 w-4 text-primary shrink-0" />
+                      <span className="text-foreground text-sm font-sans font-medium">
+                        {event.date}
+                      </span>
+                    </div>
+                  )}
                   {event.location && (
                     <div className="flex items-center gap-2">
                       <MapPin className="h-3.5 w-3.5 text-foreground/30 shrink-0" />
@@ -74,22 +91,46 @@ export function EventsSection() {
                   )}
                 </div>
 
-                {event.ticketUrl && (
-                  <a
-                    href={event.ticketUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 font-medium transition-colors duration-300"
-                  >
-                    <span className="hidden md:inline">Entradas</span>
-                    <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
-                  </a>
-                )}
+                <div className="flex items-center">
+                  {event.ticketUrl && (
+                    <a
+                      href={event.ticketUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 font-medium transition-colors duration-300"
+                    >
+                      <span className="hidden md:inline">Entradas</span>
+                      <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                    </a>
+                  )}
+                </div>
               </div>
             ))}
           </div>
         )}
       </div>
+
+      {expandedImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+          onClick={() => setExpandedImage(null)}
+        >
+          <button
+            type="button"
+            onClick={() => setExpandedImage(null)}
+            className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors"
+            aria-label="Cerrar"
+          >
+            <X className="w-8 h-8" />
+          </button>
+          <img
+            src={expandedImage.src}
+            alt={expandedImage.alt}
+            className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </section>
   )
 }

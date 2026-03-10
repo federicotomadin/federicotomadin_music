@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode, Dispatch, SetStateAction } from "react"
+import { createContext, useContext, useEffect, useState, useRef, ReactNode, Dispatch, SetStateAction } from "react"
 import {
   collection,
   addDoc,
@@ -49,7 +49,6 @@ interface DataContextType {
   galleryImages: GalleryImage[]
   settings: SiteSettings
   loading: boolean
-  useLocalStorage: boolean
 
   addEvent: (data: EventFormData) => Promise<void>
   updateEvent: (id: string, data: Partial<EventFormData>) => Promise<void>
@@ -93,104 +92,115 @@ const saveToLocalStorage = <T,>(key: string, data: T) => {
   } catch {}
 }
 
+async function testFirestoreConnection(): Promise<boolean> {
+  if (!isFirebaseConfigured()) return false
+  try {
+    const result = await Promise.race([
+      getDocs(collection(db, "settings")),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("timeout")), 5000)
+      ),
+    ])
+    return result !== undefined
+  } catch (err) {
+    console.warn("Firestore connection test failed:", err)
+    return false
+  }
+}
+
 export function DataProvider({ children }: { children: ReactNode }) {
   const [events, setEvents] = useState<Event[]>([])
   const [musicTracks, setMusicTracks] = useState<MusicTrack[]>([])
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([])
   const [settings, setSettings] = useState<SiteSettings>(defaultSettings)
   const [loading, setLoading] = useState(true)
-  const [useLocalStorage, setUseLocalStorage] = useState(!isFirebaseConfigured())
+  const firestoreOk = useRef(false)
 
   useEffect(() => {
-    if (useLocalStorage) {
-      setEvents(loadFromLocalStorage(STORAGE_KEYS.events, defaultEvents))
-      setMusicTracks(loadFromLocalStorage(STORAGE_KEYS.musicTracks, defaultMusicTracks))
-      setGalleryImages(loadFromLocalStorage(STORAGE_KEYS.galleryImages, defaultGalleryImages))
-      setSettings(loadFromLocalStorage(STORAGE_KEYS.settings, defaultSettings))
-      setLoading(false)
-    } else {
-      const unsubscribers: (() => void)[] = []
+    let cancelled = false
+    const unsubscribers: (() => void)[] = []
+
+    async function init() {
+      const connected = await testFirestoreConnection()
+      if (cancelled) return
+
+      if (!connected) {
+        console.log("Using localStorage for data persistence")
+        firestoreOk.current = false
+        setEvents(loadFromLocalStorage(STORAGE_KEYS.events, defaultEvents))
+        setMusicTracks(loadFromLocalStorage(STORAGE_KEYS.musicTracks, defaultMusicTracks))
+        setGalleryImages(loadFromLocalStorage(STORAGE_KEYS.galleryImages, defaultGalleryImages))
+        setSettings(loadFromLocalStorage(STORAGE_KEYS.settings, defaultSettings))
+        setLoading(false)
+        return
+      }
+
+      console.log("Using Firestore for data persistence")
+      firestoreOk.current = true
 
       unsubscribers.push(
         onSnapshot(collection(db, "events"), (snapshot) => {
-          setEvents(
-            snapshot.docs.map((d) => ({
-              id: d.id,
-              ...d.data(),
-              createdAt: (d.data().createdAt as { toDate?: () => Date })?.toDate?.() || new Date(),
-              updatedAt: (d.data().updatedAt as { toDate?: () => Date })?.toDate?.() || new Date(),
-            })) as Event[]
-          )
-        }, (err) => {
-          console.error("Error events:", err)
-          setUseLocalStorage(true)
-          setEvents(loadFromLocalStorage(STORAGE_KEYS.events, defaultEvents))
+          const data = snapshot.docs.map((d) => ({
+            id: d.id,
+            ...d.data(),
+            createdAt: (d.data().createdAt as { toDate?: () => Date })?.toDate?.() || new Date(),
+            updatedAt: (d.data().updatedAt as { toDate?: () => Date })?.toDate?.() || new Date(),
+          })) as Event[]
+          setEvents(data)
+          saveToLocalStorage(STORAGE_KEYS.events, data)
         })
       )
       unsubscribers.push(
         onSnapshot(collection(db, "musicTracks"), (snapshot) => {
-          setMusicTracks(
-            snapshot.docs.map((d) => ({
-              id: d.id,
-              ...d.data(),
-              createdAt: (d.data().createdAt as { toDate?: () => Date })?.toDate?.() || new Date(),
-              updatedAt: (d.data().updatedAt as { toDate?: () => Date })?.toDate?.() || new Date(),
-            })) as MusicTrack[]
-          )
-        }, (err) => {
-          console.error("Error musicTracks:", err)
-          setUseLocalStorage(true)
-          setMusicTracks(loadFromLocalStorage(STORAGE_KEYS.musicTracks, defaultMusicTracks))
+          const data = snapshot.docs.map((d) => ({
+            id: d.id,
+            ...d.data(),
+            createdAt: (d.data().createdAt as { toDate?: () => Date })?.toDate?.() || new Date(),
+            updatedAt: (d.data().updatedAt as { toDate?: () => Date })?.toDate?.() || new Date(),
+          })) as MusicTrack[]
+          setMusicTracks(data)
+          saveToLocalStorage(STORAGE_KEYS.musicTracks, data)
         })
       )
       unsubscribers.push(
         onSnapshot(collection(db, "galleryImages"), (snapshot) => {
-          setGalleryImages(
-            snapshot.docs.map((d) => ({
-              id: d.id,
-              ...d.data(),
-              createdAt: (d.data().createdAt as { toDate?: () => Date })?.toDate?.() || new Date(),
-              updatedAt: (d.data().updatedAt as { toDate?: () => Date })?.toDate?.() || new Date(),
-            })) as GalleryImage[]
-          )
-        }, (err) => {
-          console.error("Error galleryImages:", err)
-          setUseLocalStorage(true)
-          setGalleryImages(loadFromLocalStorage(STORAGE_KEYS.galleryImages, defaultGalleryImages))
+          const data = snapshot.docs.map((d) => ({
+            id: d.id,
+            ...d.data(),
+            createdAt: (d.data().createdAt as { toDate?: () => Date })?.toDate?.() || new Date(),
+            updatedAt: (d.data().updatedAt as { toDate?: () => Date })?.toDate?.() || new Date(),
+          })) as GalleryImage[]
+          setGalleryImages(data)
+          saveToLocalStorage(STORAGE_KEYS.galleryImages, data)
         })
       )
       unsubscribers.push(
         onSnapshot(collection(db, "settings"), (snapshot) => {
-          const doc = snapshot.docs[0]
-          if (doc) {
-            const data = doc.data()
+          const d = snapshot.docs[0]
+          if (d) {
+            const data = d.data()
             setSettings({
-              id: doc.id,
+              id: d.id,
               ...data,
               updatedAt: data.updatedAt?.toDate?.() || new Date(),
             } as SiteSettings)
           }
-        }, (err) => {
-          console.error("Error settings:", err)
-          setSettings(loadFromLocalStorage(STORAGE_KEYS.settings, defaultSettings))
         })
       )
 
-      setTimeout(() => setLoading(false), 500)
-      return () => unsubscribers.forEach((u) => u())
+      setLoading(false)
     }
-  }, [useLocalStorage])
+
+    init()
+    return () => {
+      cancelled = true
+      unsubscribers.forEach((u) => u())
+    }
+  }, [])
 
   const saveLocal = <T extends { id?: string }>(key: string, next: T[], setItems: Dispatch<SetStateAction<T[]>>) => {
     setItems(next)
     saveToLocalStorage(key, next)
-  }
-
-  const fallbackToLocal = () => {
-    if (!useLocalStorage) {
-      console.warn("Firestore write failed, falling back to localStorage")
-      setUseLocalStorage(true)
-    }
   }
 
   const createItem = async <T extends { id?: string }>(
@@ -200,27 +210,17 @@ export function DataProvider({ children }: { children: ReactNode }) {
     items: T[],
     setItems: Dispatch<SetStateAction<T[]>>
   ) => {
-    const item = {
-      ...data,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
-    if (useLocalStorage) {
-      const id = Date.now().toString()
-      saveLocal(key, [...items, { ...item, id }] as T[], setItems)
+    const item = { ...data, createdAt: new Date(), updatedAt: new Date() }
+    const id = Date.now().toString()
+
+    if (firestoreOk.current) {
+      await addDoc(collection(db, col), {
+        ...item,
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
+      })
     } else {
-      try {
-        await addDoc(collection(db, col), {
-          ...item,
-          createdAt: Timestamp.now(),
-          updatedAt: Timestamp.now(),
-        })
-      } catch (err) {
-        console.error(`Firestore create failed for ${col}:`, err)
-        fallbackToLocal()
-        const id = Date.now().toString()
-        saveLocal(key, [...items, { ...item, id }] as T[], setItems)
-      }
+      saveLocal(key, [...items, { ...item, id }] as T[], setItems)
     }
   }
 
@@ -233,25 +233,14 @@ export function DataProvider({ children }: { children: ReactNode }) {
     setItems: Dispatch<SetStateAction<T[]>>
   ) => {
     const updateData = { ...data, updatedAt: new Date() }
-    if (useLocalStorage) {
-      const next = items.map((i) =>
-        i.id === id ? { ...i, ...updateData } : i
-      ) as T[]
-      saveLocal(key, next, setItems)
+    if (firestoreOk.current) {
+      await updateDoc(doc(db, col, id), {
+        ...updateData,
+        updatedAt: Timestamp.now(),
+      })
     } else {
-      try {
-        await updateDoc(doc(db, col, id), {
-          ...updateData,
-          updatedAt: Timestamp.now(),
-        })
-      } catch (err) {
-        console.error(`Firestore update failed for ${col}:`, err)
-        fallbackToLocal()
-        const next = items.map((i) =>
-          i.id === id ? { ...i, ...updateData } : i
-        ) as T[]
-        saveLocal(key, next, setItems)
-      }
+      const next = items.map((i) => (i.id === id ? { ...i, ...updateData } : i)) as T[]
+      saveLocal(key, next, setItems)
     }
   }
 
@@ -262,18 +251,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
     items: T[],
     setItems: Dispatch<SetStateAction<T[]>>
   ) => {
-    if (useLocalStorage) {
+    if (firestoreOk.current) {
+      await deleteDoc(doc(db, col, id))
+    } else {
       const next = items.filter((i) => i.id !== id) as T[]
       saveLocal(key, next, setItems)
-    } else {
-      try {
-        await deleteDoc(doc(db, col, id))
-      } catch (err) {
-        console.error(`Firestore delete failed for ${col}:`, err)
-        fallbackToLocal()
-        const next = items.filter((i) => i.id !== id) as T[]
-        saveLocal(key, next, setItems)
-      }
     }
   }
 
@@ -300,27 +282,17 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   const updateSettings = async (data: Partial<SiteSettings>) => {
     const updateData = { ...data, updatedAt: new Date() }
-    if (useLocalStorage) {
+    if (firestoreOk.current) {
+      const settingsRef = collection(db, "settings")
+      const snap = await getDocs(settingsRef)
+      if (snap.empty) {
+        await addDoc(settingsRef, { ...updateData, updatedAt: Timestamp.now() })
+      } else {
+        await updateDoc(snap.docs[0].ref, { ...updateData, updatedAt: Timestamp.now() })
+      }
+    } else {
       setSettings((prev) => ({ ...prev, ...updateData }))
       saveToLocalStorage(STORAGE_KEYS.settings, { ...settings, ...updateData })
-    } else {
-      try {
-        const settingsRef = collection(db, "settings")
-        const snap = await getDocs(settingsRef)
-        if (snap.empty) {
-          await addDoc(settingsRef, { ...updateData, updatedAt: Timestamp.now() })
-        } else {
-          await updateDoc(snap.docs[0].ref, {
-            ...updateData,
-            updatedAt: Timestamp.now(),
-          })
-        }
-      } catch (err) {
-        console.error("Firestore settings update failed:", err)
-        fallbackToLocal()
-        setSettings((prev) => ({ ...prev, ...updateData }))
-        saveToLocalStorage(STORAGE_KEYS.settings, { ...settings, ...updateData })
-      }
     }
   }
 
@@ -328,19 +300,13 @@ export function DataProvider({ children }: { children: ReactNode }) {
     if (isCloudinaryConfigured()) {
       return uploadToCloudinary(file, folder)
     }
-    const storageRef = ref(
-      storage,
-      `federicotomadin_music/${folder}/${Date.now()}-${file.name}`
-    )
+    const storageRef = ref(storage, `federicotomadin_music/${folder}/${Date.now()}-${file.name}`)
     await uploadBytes(storageRef, file)
     return getDownloadURL(storageRef)
   }
 
   const uploadAudio = async (file: File, folder: string): Promise<string> => {
-    const storageRef = ref(
-      storage,
-      `federicotomadin_music/${folder}/${Date.now()}-${file.name}`
-    )
+    const storageRef = ref(storage, `federicotomadin_music/${folder}/${Date.now()}-${file.name}`)
     await uploadBytes(storageRef, file)
     return getDownloadURL(storageRef)
   }
@@ -348,24 +314,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
   return (
     <DataContext.Provider
       value={{
-        events,
-        musicTracks,
-        galleryImages,
-        settings,
-        loading,
-        useLocalStorage,
-        addEvent,
-        updateEvent,
-        deleteEvent,
-        addMusicTrack,
-        updateMusicTrack,
-        deleteMusicTrack,
-        addGalleryImage,
-        updateGalleryImage,
-        deleteGalleryImage,
-        updateSettings,
-        uploadImage,
-        uploadAudio,
+        events, musicTracks, galleryImages, settings, loading,
+        addEvent, updateEvent, deleteEvent,
+        addMusicTrack, updateMusicTrack, deleteMusicTrack,
+        addGalleryImage, updateGalleryImage, deleteGalleryImage,
+        updateSettings, uploadImage, uploadAudio,
       }}
     >
       {children}
