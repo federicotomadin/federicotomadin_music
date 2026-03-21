@@ -1,0 +1,15 @@
+---
+description: General project conventions and standards
+alwaysApply: true
+---
+
+# Project Conventions
+
+- Language: TypeScript strict, no `any` types
+- Styling: Tailwind CSS v4 utility classes, no external CSS files
+- Imports: use `@/` alias (maps to `./src/`)
+- Components: functional components only, no class components
+- State: React hooks + Context API, no external state libraries
+- UI text: Spanish for user-facing content, English for code/comments
+- Never commit `.env` — secrets go in GitHub Actions secrets
+- Test builds locally with `npm run build` before pushing

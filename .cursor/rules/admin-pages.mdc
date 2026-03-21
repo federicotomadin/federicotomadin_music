@@ -1,0 +1,14 @@
+---
+description: Conventions for admin panel pages
+globs: src/pages/admin/*.tsx
+alwaysApply: false
+---
+
+# Admin Panel Pages
+
+- Always show error (red) and success (green) alerts using `Alert` + `AlertDescription`
+- Use `showMessage(msg, isError)` pattern with 5s auto-dismiss
+- Image uploads go through `uploadImage()` from DataContext — never upload directly
+- Forms use Radix Dialog for modals with `DialogFooter` containing Cancel + Submit
+- Date fields use `<Input type="date">`, not text inputs
+- All text in Spanish (labels, buttons, messages)

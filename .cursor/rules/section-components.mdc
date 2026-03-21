@@ -1,0 +1,15 @@
+---
+description: Conventions for public-facing section components
+globs: src/components/sections/*.tsx
+alwaysApply: false
+---
+
+# Section Components
+
+- Use `assetUrl()` for images from `/public`, never hardcode paths
+- Mobile-first responsive: lighter overlays on mobile so photos are visible
+- Section spacing: `py-28 md:py-36`, container: `px-6 lg:px-12`
+- Section label pattern: `section-line` + gold uppercase text with `tracking-[0.25em]`
+- Titles: `font-serif font-light`, body: `font-sans font-light`
+- Text on dark backgrounds: use `text-foreground/50` to `text-foreground/70`, not pure white
+- All data from `useData()` hook, never hardcoded content
