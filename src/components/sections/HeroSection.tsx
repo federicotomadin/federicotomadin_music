@@ -4,13 +4,9 @@ import { Play, Pause, ChevronDown } from "lucide-react"
 import { useRef, useState } from "react"
 
 export function HeroSection() {
-  const { events, musicTracks } = useData()
+  const { musicTracks } = useData()
   const [isPlaying, setIsPlaying] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
-
-  const latestEvent = events.filter((e) => e.isActive).sort((a, b) => 
-    new Date(b.date).getTime() - new Date(a.date).getTime()
-  )[0]
 
   const featuredTrack = musicTracks.filter((t) => t.isActive).sort((a, b) => (a.order ?? 0) - (b.order ?? 0))[0]
 
@@ -58,13 +54,6 @@ export function HeroSection() {
               <span className="block">Federico</span>
               <span className="block text-primary italic">Tomadin</span>
             </h1>
-
-            {/* Featured event */}
-            {latestEvent && (
-              <p className="text-foreground/50 text-base md:text-lg leading-relaxed max-w-lg font-sans font-light">
-                {latestEvent.title}
-              </p>
-            )}
 
             {/* Music player - only show when there's an active track */}
             {featuredTrack && (
