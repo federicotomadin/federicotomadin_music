@@ -9,6 +9,7 @@ export function HeroSection() {
   const audioRef = useRef<HTMLAudioElement>(null)
 
   const featuredTrack = musicTracks.filter((t) => t.isActive).sort((a, b) => (a.order ?? 0) - (b.order ?? 0))[0]
+  const heroBackgroundSrc = assetUrl("background.jpg")
 
   const handlePlay = () => {
     if (!featuredTrack?.url) return
@@ -26,15 +27,23 @@ export function HeroSection() {
   return (
     <section className="relative min-h-screen flex flex-col">
       {/* Background image */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 overflow-hidden bg-background">
+        {/* Blurred fill covers the whole screen around the pulled-back photo */}
         <img
-          src={assetUrl("background.jpg")}
+          src={heroBackgroundSrc}
+          alt=""
+          aria-hidden
+          className="absolute inset-0 h-full w-full object-cover object-[34%_36%] md:object-[46%_24%] scale-125 blur-2xl brightness-[0.45] saturate-150"
+        />
+        <img
+          src={heroBackgroundSrc}
           alt="Federico Tomadin - Baterista"
-          className="w-full h-full object-cover object-[center_20%] md:object-left-top brightness-110"
+          className="absolute left-1/2 top-[calc(50%+2.5rem)] h-[82%] w-[92%] -translate-x-1/2 -translate-y-1/2 object-contain object-center brightness-110 contrast-[1.05]"
         />
         <div className="absolute inset-0 bg-black/10 md:bg-black/20" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-background/40 to-transparent h-32 md:h-40" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#131211] via-[#131211]/20 md:via-transparent to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/30 md:from-black/40 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/15 md:from-black/25 via-transparent to-transparent" />
       </div>
 
       {/* Content */}
