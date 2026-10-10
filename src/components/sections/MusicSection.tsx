@@ -22,6 +22,14 @@ export function MusicSection() {
       credits: settings.album2Credits || "Yago Aguero - Guitarra y direccion, Benjamin Groisman - Contrabajo, Ramiro Sayas - Piano",
       spotifyUrl: settings.spotifyAlbum2Url,
     },
+    {
+      id: "grupo-cauces",
+      title: "Grupo Cauces",
+      cover: assetUrl("grupo_cauces.png"),
+      description: "EP de 2010. Cinco canciones del cancionero popular argentino: Carcará, Invoño, Camino del rio, Los libros de la buena memoria y Zamba del carnaval.",
+      credits: "German Bustamante - Guitarra y voz, Diego Villa - Teclado y voces, Angel Gimenez - Bajo electrico, Federico Tomadin - Bateria",
+      spotifyUrl: "https://open.spotify.com/album/0A8nzzsvzFJ3Gt7BWiHB1v",
+    },
   ]
 
   return (
