@@ -11,6 +11,8 @@ import {
   AdminMusic,
   AdminGallery,
   AdminSettings,
+  AdminSubscribers,
+  AdminShop,
 } from "@/pages/admin"
 
 function App() {
@@ -34,6 +36,8 @@ function App() {
               <Route path="eventos" element={<AdminEvents />} />
               <Route path="musica" element={<AdminMusic />} />
               <Route path="galeria" element={<AdminGallery />} />
+              <Route path="suscriptores" element={<AdminSubscribers />} />
+              <Route path="shop" element={<AdminShop />} />
               <Route path="configuracion" element={<AdminSettings />} />
             </Route>
 

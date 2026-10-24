@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"
 import { Button } from "@/components/ui/button"
-import { LayoutDashboard, Calendar, Music, Image, Settings, LogOut, Menu, X, Home } from "lucide-react"
+import { LayoutDashboard, Calendar, Music, Image, Settings, LogOut, Menu, X, Home, Users, ShoppingBag } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const navigation = [
@@ -10,6 +10,8 @@ const navigation = [
   { name: "Eventos", href: "/panel/eventos", icon: Calendar },
   { name: "Música", href: "/panel/musica", icon: Music },
   { name: "Galería", href: "/panel/galeria", icon: Image },
+  { name: "Shop", href: "/panel/shop", icon: ShoppingBag },
+  { name: "Suscriptores", href: "/panel/suscriptores", icon: Users },
   { name: "Configuración", href: "/panel/configuracion", icon: Settings },
 ]
 

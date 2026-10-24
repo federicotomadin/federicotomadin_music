@@ -17,14 +17,17 @@ import {
   MusicTrack,
   GalleryImage,
   SiteSettings,
+  ShopProduct,
   EventFormData,
   MusicTrackFormData,
   GalleryImageFormData,
+  ShopProductFormData,
 } from "@/types"
 
 const defaultEvents: Event[] = []
 const defaultMusicTracks: MusicTrack[] = []
 const defaultGalleryImages: GalleryImage[] = []
+const defaultShopProducts: ShopProduct[] = []
 const defaultSettings: SiteSettings = {
   id: "settings",
   bio: "Músico - Baterista - Compositor. Jazz moderno con raíces folclóricas sutilmente evocadas.\n\nBaterista y compositor, nacido en Santa Fe, Argentina, en el año de 1986. Se formó en el instrumento con el baterista y percusionista Gonzalo Díaz en la ciudad de Santa Fe por el lapso de dos años. Tomó clases con Germán Boco, Pipi Piazzolla, Pablo Raposo, Carlos Lastra, Eloy Michelini y Jerónimo Carmona. Se desempeña artísticamente como baterista en diferentes formaciones de jazz local como de proyectos de música original. Lleva adelante actualmente el Federico Tomadin Grupo, en el que participan Joaquín Sombielle (piano), Pablo Giordano (contrabajo), Camila Nebbia (saxo tenor) y César Rizzardi (guitarra). En el año 2018 la formación ganó el concurso \"Primera Toma\" para presentar su primer disco en el Festival Internacional de Jazz de Buenos Aires.\n\nActualmente su nuevo grupo en formación, quinteto, está compuesto por Pablo Juárez (piano), Pablo Giordano (contrabajo), Martín Portella (saxo alto) y Ramiro Barrios (guitarra).",
@@ -47,6 +50,7 @@ interface DataContextType {
   events: Event[]
   musicTracks: MusicTrack[]
   galleryImages: GalleryImage[]
+  shopProducts: ShopProduct[]
   settings: SiteSettings
   loading: boolean
 
@@ -59,6 +63,9 @@ interface DataContextType {
   addGalleryImage: (data: GalleryImageFormData) => Promise<void>
   updateGalleryImage: (id: string, data: Partial<GalleryImageFormData>) => Promise<void>
   deleteGalleryImage: (id: string) => Promise<void>
+  addShopProduct: (data: ShopProductFormData) => Promise<void>
+  updateShopProduct: (id: string, data: Partial<ShopProductFormData>) => Promise<void>
+  deleteShopProduct: (id: string) => Promise<void>
   updateSettings: (data: Partial<SiteSettings>) => Promise<void>
   uploadImage: (file: File, folder: string) => Promise<string>
   uploadAudio: (file: File, folder: string) => Promise<string>
@@ -75,6 +82,7 @@ const STORAGE_KEYS = {
   events: "ft_music_events",
   musicTracks: "ft_music_tracks",
   galleryImages: "ft_music_gallery",
+  shopProducts: "ft_music_shop",
   settings: "ft_music_settings",
 }
 
@@ -112,6 +120,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [events, setEvents] = useState<Event[]>([])
   const [musicTracks, setMusicTracks] = useState<MusicTrack[]>([])
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([])
+  const [shopProducts, setShopProducts] = useState<ShopProduct[]>([])
   const [settings, setSettings] = useState<SiteSettings>(defaultSettings)
   const [loading, setLoading] = useState(true)
   const firestoreOk = useRef(false)
@@ -130,6 +139,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         setEvents(loadFromLocalStorage(STORAGE_KEYS.events, defaultEvents))
         setMusicTracks(loadFromLocalStorage(STORAGE_KEYS.musicTracks, defaultMusicTracks))
         setGalleryImages(loadFromLocalStorage(STORAGE_KEYS.galleryImages, defaultGalleryImages))
+        setShopProducts(loadFromLocalStorage(STORAGE_KEYS.shopProducts, defaultShopProducts))
         setSettings(loadFromLocalStorage(STORAGE_KEYS.settings, defaultSettings))
         setLoading(false)
         return
@@ -172,6 +182,18 @@ export function DataProvider({ children }: { children: ReactNode }) {
           })) as GalleryImage[]
           setGalleryImages(data)
           saveToLocalStorage(STORAGE_KEYS.galleryImages, data)
+        })
+      )
+      unsubscribers.push(
+        onSnapshot(collection(db, "shopProducts"), (snapshot) => {
+          const data = snapshot.docs.map((d) => ({
+            id: d.id,
+            ...d.data(),
+            createdAt: (d.data().createdAt as { toDate?: () => Date })?.toDate?.() || new Date(),
+            updatedAt: (d.data().updatedAt as { toDate?: () => Date })?.toDate?.() || new Date(),
+          })) as ShopProduct[]
+          setShopProducts(data)
+          saveToLocalStorage(STORAGE_KEYS.shopProducts, data)
         })
       )
       unsubscribers.push(
@@ -280,6 +302,13 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const deleteGalleryImage = (id: string) =>
     deleteItem("galleryImages", STORAGE_KEYS.galleryImages, id, galleryImages, setGalleryImages)
 
+  const addShopProduct = (d: ShopProductFormData) =>
+    createItem("shopProducts", STORAGE_KEYS.shopProducts, d as unknown as Record<string, unknown>, shopProducts, setShopProducts)
+  const updateShopProduct = (id: string, d: Partial<ShopProductFormData>) =>
+    updateItem("shopProducts", STORAGE_KEYS.shopProducts, id, d as unknown as Record<string, unknown>, shopProducts, setShopProducts)
+  const deleteShopProduct = (id: string) =>
+    deleteItem("shopProducts", STORAGE_KEYS.shopProducts, id, shopProducts, setShopProducts)
+
   const updateSettings = async (data: Partial<SiteSettings>) => {
     const updateData = { ...data, updatedAt: new Date() }
     if (firestoreOk.current) {
@@ -314,10 +343,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
   return (
     <DataContext.Provider
       value={{
-        events, musicTracks, galleryImages, settings, loading,
+        events, musicTracks, galleryImages, shopProducts, settings, loading,
         addEvent, updateEvent, deleteEvent,
         addMusicTrack, updateMusicTrack, deleteMusicTrack,
         addGalleryImage, updateGalleryImage, deleteGalleryImage,
+        addShopProduct, updateShopProduct, deleteShopProduct,
         updateSettings, uploadImage, uploadAudio,
       }}
     >

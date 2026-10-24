@@ -55,6 +55,32 @@ export interface SiteSettings {
   updatedAt: Date
 }
 
+export interface Subscriber {
+  id: string
+  email: string
+  whatsapp: string
+  source: string
+  isActive: boolean
+  createdAt: Date
+}
+
+export interface ShopProduct {
+  id: string
+  title: string
+  description: string
+  coverImage: string
+  format: string
+  price?: string
+  purchaseUrl?: string
+  discs: number
+  soldOut: boolean
+  isActive: boolean
+  order: number
+  createdAt: Date
+  updatedAt: Date
+}
+
 export type EventFormData = Omit<Event, "id" | "createdAt" | "updatedAt">
 export type MusicTrackFormData = Omit<MusicTrack, "id" | "createdAt" | "updatedAt">
 export type GalleryImageFormData = Omit<GalleryImage, "id" | "createdAt" | "updatedAt">
+export type ShopProductFormData = Omit<ShopProduct, "id" | "createdAt" | "updatedAt">

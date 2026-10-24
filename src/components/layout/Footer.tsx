@@ -30,13 +30,21 @@ export function Footer() {
             <span className="text-xs text-foreground/30 uppercase tracking-[0.2em] font-sans mb-1">
               Navegacion
             </span>
-            {["Bio", "Musica", "Conciertos", "Galeria", "Contacto"].map((item) => (
+            {[
+              { label: "Bio", href: "#bio" },
+              { label: "Musica", href: "#musica" },
+              { label: "Shop", href: "#shop" },
+              { label: "Conciertos", href: "#conciertos" },
+              { label: "Novedades", href: "#novedades" },
+              { label: "Galeria", href: "#galeria" },
+              { label: "Contacto", href: "#contacto" },
+            ].map((item) => (
               <a
-                key={item}
-                href={`#${item.toLowerCase()}`}
+                key={item.href}
+                href={item.href}
                 className="text-sm text-foreground/50 hover:text-foreground transition-colors duration-300 font-sans"
               >
-                {item}
+                {item.label}
               </a>
             ))}
           </div>

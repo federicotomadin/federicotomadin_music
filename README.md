@@ -7,6 +7,7 @@ Sitio web personal para músico, baterista y compositor. Single page con Firebas
 
 - **Galería**: Imágenes de conciertos y presentaciones
 - **Conciertos**: Eventos y anuncios de fechas
+- **Novedades**: suscripción por email/WhatsApp y aviso al publicar un concierto
 - **Música**: Tracks para reproducir en el sitio (subir MP3 o URLs)
 - **Enlaces**: Spotify, YouTube, Apple Music, Instagram, Facebook
 - **Panel de administración**: Gestión de contenido sin código
@@ -30,14 +31,22 @@ Diseño inspirado en [federicotomadin.com](https://www.federicotomadin.com/) (Wi
 3. Configurar Firebase:
    - Crear proyecto en [Firebase Console](https://console.firebase.google.com)
    - Habilitar Firestore, Storage y Authentication (Email/Password)
-   - Crear colecciones: `events`, `musicTracks`, `galleryImages`, `settings`
+   - Crear colecciones: `events`, `musicTracks`, `galleryImages`, `settings`, `subscribers`
+   - Pegar las reglas de `firestore.rules` en Firebase Console → Firestore → Rules (así nadie puede leer la lista de emails)
    - Copiar credenciales a `.env`
 
-4. (Opcional) Cloudinary para imágenes:
+4. EmailJS para el formulario de contacto y avisos a suscriptores:
+   - Template de contacto: el que ya usa el formulario (mensaje hacia vos)
+   - Template de novedades: **To Email** = `{{to_email}}`, variables `{{subject}}`, `{{message}}`, `{{site_url}}`
+   - Guardar el ID del template de novedades en `VITE_EMAILJS_NEWSLETTER_TEMPLATE_ID` y en GitHub Secrets
+
+Al publicar un concierto nuevo desde el panel, se envía un email a cada suscriptor. WhatsApp no permite envíos masivos automáticos; el panel abre chats listos o copia los números para una lista de difusión.
+
+5. (Opcional) Cloudinary para imágenes:
    - Crear cuenta y upload preset en Cloudinary
    - Si no se configura, se usa Firebase Storage para imágenes y audio
 
-5. Sin Firebase configurado, el sitio usa **modo demo** con localStorage.
+6. Sin Firebase configurado, el sitio usa **modo demo** con localStorage.
 
 ## GitHub Pages
 

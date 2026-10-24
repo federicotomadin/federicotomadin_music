@@ -9,6 +9,7 @@ const menuItems = [
   { label: "Inicio", href: "#" },
   { label: "Bio", href: "#bio" },
   { label: "Musica", href: "#musica" },
+  { label: "Shop", href: "#shop" },
   { label: "Conciertos", href: "#conciertos" },
   { label: "Galeria", href: "#galeria" },
   { label: "Contacto", href: "#contacto" },
@@ -45,7 +46,7 @@ export function Header() {
             </span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-8 lg:gap-10">
+          <nav className="hidden md:flex items-center gap-6 lg:gap-9">
             {menuItems.map((item) => (
               <a
                 key={item.href}
@@ -138,7 +139,7 @@ export function Header() {
         <div
           className={cn(
             "md:hidden overflow-hidden transition-all duration-300",
-            isMenuOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
+            isMenuOpen ? "max-h-[28rem] opacity-100" : "max-h-0 opacity-0"
           )}
         >
           <nav className="py-6 space-y-1 border-t border-border/50">

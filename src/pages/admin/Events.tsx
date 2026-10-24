@@ -13,7 +13,9 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog"
-import { Plus, Pencil, Trash2, AlertCircle, CheckCircle2 } from "lucide-react"
+import { Plus, Pencil, Trash2, AlertCircle, CheckCircle2, Bell, Loader2 } from "lucide-react"
+import { WhatsAppNotifyDialog } from "@/components/admin/WhatsAppNotifyDialog"
+import { isNewsletterConfigured, notifySubscribers } from "@/lib/notify"
 import type { EventFormData } from "@/types"
 
 const BASE_URL = import.meta.env.BASE_URL
@@ -34,6 +36,9 @@ export function AdminEvents() {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
+  const [notify, setNotify] = useState(true)
+  const [notifyingId, setNotifyingId] = useState<string | null>(null)
+  const [whatsapp, setWhatsapp] = useState<{ numbers: string[]; message: string } | null>(null)
 
   const reset = () => {
     setForm({
@@ -46,6 +51,7 @@ export function AdminEvents() {
       isActive: true,
     })
     setEditing(null)
+    setNotify(true)
   }
 
   const showMessage = (msg: string, isError: boolean) => {
@@ -59,6 +65,25 @@ export function AdminEvents() {
     setTimeout(() => { setError(null); setSuccess(null) }, 5000)
   }
 
+  const sendEventNotice = async (data: EventFormData) => {
+    const result = await notifySubscribers({
+      kind: "event",
+      title: data.title,
+      date: data.date,
+      location: data.location,
+      description: data.description,
+      ticketUrl: data.ticketUrl,
+    })
+    const emailPart = result.emailConfigured
+      ? `${result.emailsSent} emails enviados${result.emailsFailed ? `, ${result.emailsFailed} con error` : ""}`
+      : "El aviso por email necesita el template de novedades en EmailJS"
+    showMessage(`Aviso: ${emailPart}`, false)
+    if (result.whatsappNumbers.length > 0) {
+      setWhatsapp({ numbers: result.whatsappNumbers, message: result.message })
+    }
+    return result
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
@@ -68,12 +93,25 @@ export function AdminEvents() {
       } else {
         await addEvent(form)
       }
+      const shouldNotify = !editing && notify && form.isActive
+      const createdForm = form
       setOpen(false)
       reset()
       showMessage(editing ? "Evento actualizado" : "Evento creado", false)
+      if (shouldNotify) {
+        setNotifyingId("new")
+        try {
+          await sendEventNotice(createdForm)
+        } catch (notifyErr) {
+          console.error(notifyErr)
+          showMessage("El evento se guardó, pero no se pudieron enviar los avisos", true)
+        }
+      }
     } catch (err) {
       console.error(err)
       showMessage(`Error al guardar: ${err instanceof Error ? err.message : "Error desconocido"}`, true)
+    } finally {
+      setNotifyingId(null)
     }
   }
 
@@ -121,6 +159,12 @@ export function AdminEvents() {
           <AlertDescription className="text-green-500">{success}</AlertDescription>
         </Alert>
       )}
+      {notifyingId && (
+        <Alert>
+          <Loader2 className="h-4 w-4 animate-spin" />
+          <AlertDescription>Enviando avisos a suscriptores...</AlertDescription>
+        </Alert>
+      )}
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-semibold">Eventos</h2>
@@ -147,6 +191,25 @@ export function AdminEvents() {
                   </div>
                 </div>
                 <div className="flex gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    title="Avisar suscriptores"
+                    disabled={notifyingId !== null}
+                    onClick={async () => {
+                      setNotifyingId(event.id)
+                      try {
+                        await sendEventNotice(event)
+                      } catch (err) {
+                        console.error(err)
+                        showMessage("No se pudo avisar a los suscriptores", true)
+                      } finally {
+                        setNotifyingId(null)
+                      }
+                    }}
+                  >
+                    {notifyingId === event.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Bell className="h-4 w-4" />}
+                  </Button>
                   <Button variant="ghost" size="icon" onClick={() => handleEdit(event)}><Pencil className="h-4 w-4" /></Button>
                   <Button variant="ghost" size="icon" className="text-destructive" onClick={() => deleteEvent(event.id)}><Trash2 className="h-4 w-4" /></Button>
                 </div>
@@ -193,13 +256,35 @@ export function AdminEvents() {
               <input type="checkbox" id="active" checked={form.isActive} onChange={(e) => setForm((f) => ({ ...f, isActive: e.target.checked }))} />
               <Label htmlFor="active">Activo</Label>
             </div>
+            {!editing && (
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <input type="checkbox" id="notify" checked={notify} onChange={(e) => setNotify(e.target.checked)} />
+                  <Label htmlFor="notify">Avisar a suscriptores</Label>
+                </div>
+                {!isNewsletterConfigured() && notify && (
+                  <p className="text-xs text-muted-foreground">
+                    El email automático necesita el template de novedades en EmailJS. WhatsApp se puede abrir desde el panel.
+                  </p>
+                )}
+              </div>
+            )}
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
-              <Button type="submit" disabled={uploading}>Guardar</Button>
+              <Button type="submit" disabled={uploading || notifyingId !== null}>Guardar</Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
+
+      <WhatsAppNotifyDialog
+        open={Boolean(whatsapp)}
+        onOpenChange={(next) => {
+          if (!next) setWhatsapp(null)
+        }}
+        numbers={whatsapp?.numbers ?? []}
+        message={whatsapp?.message ?? ""}
+      />
     </div>
   )
 }

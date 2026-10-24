@@ -2,6 +2,7 @@ import { useData } from "@/contexts/DataContext"
 import { assetUrl } from "@/lib/utils"
 import { Play, Pause, ChevronDown } from "lucide-react"
 import { useRef, useState } from "react"
+import { SubscribeBox } from "@/components/sections/SubscribeBox"
 
 export function HeroSection() {
   const { musicTracks } = useData()
@@ -44,6 +45,10 @@ export function HeroSection() {
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/40 to-transparent h-32 md:h-40" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#131211] via-[#131211]/20 md:via-transparent to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/15 md:from-black/25 via-transparent to-transparent" />
+      </div>
+
+      <div className="hidden lg:block absolute top-28 xl:top-32 right-6 xl:right-12 z-20 w-[22rem] xl:w-[24rem]">
+        <SubscribeBox variant="compact" />
       </div>
 
       {/* Content */}

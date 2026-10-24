@@ -41,6 +41,12 @@ export function EventsSection() {
             <p className="text-foreground/50 font-sans font-light text-base mb-4">
               No hay conciertos programados en este momento.
             </p>
+            <a
+              href="#novedades"
+              className="inline-block mb-4 text-sm text-primary hover:text-primary/80 font-sans transition-colors"
+            >
+              Suscribite para enterarte de las próximas fechas
+            </a>
             <p className="text-sm text-foreground/30 font-sans">
               Bares Notables de Buenos Aires 2019 / Festival de Jazz de Buenos Aires Noviembre 2018
             </p>

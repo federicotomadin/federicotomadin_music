@@ -10,7 +10,7 @@ export function MusicSection() {
       id: "tornasolado",
       title: "Tornasolado",
       cover: assetUrl("Tornasolado-Frontal.jpg"),
-      description: "Debut en estudio del Federico Tomadin Grupo. Composiciones originales con influencias del jazz moderno y raices folkloricas sutilmente evocadas.",
+      description: "Debut en estudio del Federico Tomadin Grupo. Composiciones originales con influencias de jazz moderno",
       credits: "Joaquin Sombielle, Cesar Rizzardi, Pablo Giordano, Camila Nebbia",
       spotifyUrl: settings.spotifyTornasoladoUrl || settings.spotifyUrl,
     },
