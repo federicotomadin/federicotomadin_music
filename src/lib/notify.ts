@@ -1,4 +1,5 @@
 import emailjs from "@emailjs/browser"
+import { directionsUrl } from "@/lib/maps"
 import {
   listSubscribers,
   uniqueEmailSubscribers,
@@ -48,22 +49,46 @@ export function isNewsletterConfigured(): boolean {
   return Boolean(SERVICE_ID && TEMPLATE_ID && PUBLIC_KEY)
 }
 
-export function buildNotifyCopy(payload: NotifyPayload): { subject: string; message: string } {
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
+}
+
+function htmlLink(href: string, label: string): string {
+  return `<a href="${escapeHtml(href)}" style="color:#c8a55a;text-decoration:none;">${escapeHtml(label)}</a>`
+}
+
+export function buildNotifyCopy(payload: NotifyPayload): {
+  subject: string
+  message: string
+  messageHtml: string
+} {
   const dateLabel = payload.date ? formatEventDate(payload.date) : ""
+  const site = siteUrl()
 
   if (payload.kind === "custom") {
     const subject = payload.title.trim() || "Novedades de Federico Tomadin"
-    const lines = [
+    const body = payload.description?.trim() || subject
+    const lines = ["Hola,", "", body, "", `Más info: ${site}`]
+    const htmlLines = [
       "Hola,",
       "",
-      payload.description?.trim() || subject,
+      escapeHtml(body).replace(/\n/g, "<br>"),
       "",
-      `Más info: ${siteUrl()}`,
+      `Más info: ${htmlLink(site, site)}`,
     ]
-    return { subject, message: lines.join("\n") }
+    return { subject, message: lines.join("\n"), messageHtml: htmlLines.join("<br>") }
   }
 
   const subject = `Nuevo concierto: ${payload.title}`
+  const place = payload.location?.trim() ?? ""
+  const description = payload.description?.trim() ?? ""
+  const directions = place ? directionsUrl(place) : ""
+
   const lines = [
     "Hola,",
     "",
@@ -71,14 +96,31 @@ export function buildNotifyCopy(payload: NotifyPayload): { subject: string; mess
     "",
     payload.title,
     dateLabel ? `Fecha: ${dateLabel}` : null,
-    payload.location ? `Lugar: ${payload.location}` : null,
-    payload.description?.trim() ? payload.description.trim() : null,
+    place ? `Lugar: ${place}` : null,
+    place ? `Cómo llegar: ${directions}` : null,
+    description || null,
     payload.ticketUrl ? `Entradas: ${payload.ticketUrl}` : null,
     "",
-    `Más info: ${siteUrl()}`,
+    `Más info: ${site}`,
   ].filter((line): line is string => line !== null)
 
-  return { subject, message: lines.join("\n") }
+  const htmlLines = [
+    "Hola,",
+    "",
+    "Hay un concierto nuevo de Federico Tomadin:",
+    "",
+    `<strong style="color:#f0ede8;">${escapeHtml(payload.title)}</strong>`,
+    dateLabel ? `Fecha: ${escapeHtml(dateLabel)}` : null,
+    place
+      ? `Lugar: ${escapeHtml(place)}&nbsp;&nbsp;${htmlLink(directions, "📍 Cómo llegar")}`
+      : null,
+    description ? escapeHtml(description).replace(/\n/g, "<br>") : null,
+    payload.ticketUrl ? `Entradas: ${htmlLink(payload.ticketUrl, payload.ticketUrl)}` : null,
+    "",
+    `Más info: ${htmlLink(site, site)}`,
+  ].filter((line): line is string => line !== null)
+
+  return { subject, message: lines.join("\n"), messageHtml: htmlLines.join("<br>") }
 }
 
 function sleep(ms: number): Promise<void> {
@@ -89,7 +131,7 @@ export async function notifySubscribers(
   payload: NotifyPayload,
   onProgress?: (sent: number, total: number) => void,
 ): Promise<NotifyResult> {
-  const { subject, message } = buildNotifyCopy(payload)
+  const { subject, message, messageHtml } = buildNotifyCopy(payload)
   const subscribers = await listSubscribers()
   const emailSubs = uniqueEmailSubscribers(subscribers)
   const whatsappNumbers = uniqueWhatsAppSubscribers(subscribers).map((s) => s.whatsapp)
@@ -108,6 +150,7 @@ export async function notifySubscribers(
             to_email: sub.email,
             subject,
             message,
+            message_html: messageHtml,
             site_url: siteUrl(),
           },
           PUBLIC_KEY,

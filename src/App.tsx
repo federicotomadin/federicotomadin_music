@@ -3,6 +3,7 @@ import { AuthProvider } from "@/contexts/AuthContext"
 import { DataProvider } from "@/contexts/DataContext"
 import { ProtectedRoute } from "@/components/ProtectedRoute"
 import { Home } from "@/pages/Home"
+import { Directions } from "@/pages/Directions"
 import {
   AdminLogin,
   AdminLayout,
@@ -22,6 +23,7 @@ function App() {
         <DataProvider>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/como-llegar" element={<Directions />} />
 
             <Route path="/panel/login" element={<AdminLogin />} />
             <Route

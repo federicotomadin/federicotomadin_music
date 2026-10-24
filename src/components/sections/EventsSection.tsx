@@ -1,5 +1,7 @@
 import { useState } from "react"
+import { Link } from "react-router-dom"
 import { useData } from "@/contexts/DataContext"
+import { directionsPath } from "@/lib/maps"
 import { Calendar, MapPin, ArrowRight, X } from "lucide-react"
 
 export function EventsSection() {
@@ -85,10 +87,16 @@ export function EventsSection() {
                     </div>
                   )}
                   {event.location && (
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-3.5 w-3.5 text-foreground/30 shrink-0" />
-                      <span className="text-foreground/40 text-sm font-sans">{event.location}</span>
-                    </div>
+                    <Link
+                      to={directionsPath(event.location)}
+                      className="group/place inline-flex items-center gap-2"
+                      title="Cómo llegar"
+                    >
+                      <MapPin className="h-3.5 w-3.5 text-primary/70 shrink-0 transition-colors group-hover/place:text-primary" />
+                      <span className="text-foreground/40 text-sm font-sans underline-offset-4 transition-colors group-hover/place:text-primary group-hover/place:underline">
+                        {event.location}
+                      </span>
+                    </Link>
                   )}
                   {event.description && (
                     <p className="text-sm text-foreground/40 font-sans font-light line-clamp-2 leading-relaxed">
