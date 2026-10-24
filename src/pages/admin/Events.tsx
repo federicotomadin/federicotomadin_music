@@ -74,10 +74,17 @@ export function AdminEvents() {
       description: data.description,
       ticketUrl: data.ticketUrl,
     })
-    const emailPart = result.emailConfigured
-      ? `${result.emailsSent} emails enviados${result.emailsFailed ? `, ${result.emailsFailed} con error` : ""}`
-      : "El aviso por email necesita el template de novedades en EmailJS"
-    showMessage(`Aviso: ${emailPart}`, false)
+    if (!result.emailConfigured) {
+      showMessage(
+        "El evento está publicado, pero el email a suscriptores no está configurado. Falta VITE_EMAILJS_NEWSLETTER_TEMPLATE_ID (un template de EmailJS con destinatario {{to_email}}).",
+        true,
+      )
+    } else if (result.emailsSent === 0 && result.emailsFailed === 0) {
+      showMessage("El evento está publicado. No hay suscriptores con email para avisar.", false)
+    } else {
+      const emailPart = `${result.emailsSent} emails enviados${result.emailsFailed ? `, ${result.emailsFailed} con error` : ""}`
+      showMessage(`Aviso: ${emailPart}`, result.emailsFailed > 0 && result.emailsSent === 0)
+    }
     if (result.whatsappNumbers.length > 0) {
       setWhatsapp({ numbers: result.whatsappNumbers, message: result.message })
     }
@@ -157,6 +164,17 @@ export function AdminEvents() {
         <Alert>
           <CheckCircle2 className="h-4 w-4 text-green-500" />
           <AlertDescription className="text-green-500">{success}</AlertDescription>
+        </Alert>
+      )}
+      {!isNewsletterConfigured() && (
+        <Alert>
+          <AlertCircle className="h-4 w-4 text-primary" />
+          <AlertDescription>
+            Los avisos por email no se envían todavía. En EmailJS creá un template con destinatario{" "}
+            <code>{"{{to_email}}"}</code>, asunto <code>{"{{subject}}"}</code> y cuerpo{" "}
+            <code>{"{{message}}"}</code>. Después agregá <code>VITE_EMAILJS_NEWSLETTER_TEMPLATE_ID</code>{" "}
+            en <code>.env</code> y en GitHub Secrets, y reiniciá el servidor.
+          </AlertDescription>
         </Alert>
       )}
       {notifyingId && (
