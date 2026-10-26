@@ -31,8 +31,9 @@ export function SubscribeBox({ variant = "default", className }: SubscribeBoxPro
   const [errorMsg, setErrorMsg] = useState("")
 
   const selectMethod = (next: SubscribeMethod) => {
+    if (next === method) return
     setMethod(next)
-    if (status === "error") {
+    if (status !== "sending") {
       setStatus("idle")
       setErrorMsg("")
     }
@@ -85,12 +86,12 @@ export function SubscribeBox({ variant = "default", className }: SubscribeBoxPro
       className={cn(
         "relative border border-border/60 bg-card/90 backdrop-blur-md shadow-[0_20px_60px_rgba(0,0,0,0.25)]",
         compact
-          ? "rounded-2xl px-4 py-5 md:px-5 md:py-5"
+          ? "rounded-2xl px-6 py-7 md:px-7 md:py-8"
           : "rounded-[2rem] px-5 py-10 md:px-12 md:py-12",
         className,
       )}
     >
-      <form onSubmit={handleSubmit} className={cn(compact ? "space-y-3.5" : "space-y-6")}>
+      <form onSubmit={handleSubmit} className={cn(compact ? "space-y-5" : "space-y-6")}>
         <div className={cn("flex gap-3", compact ? "items-center justify-between" : "flex-col sm:flex-row sm:items-start sm:justify-between gap-4")}>
           <h2
             className={cn(
@@ -107,7 +108,7 @@ export function SubscribeBox({ variant = "default", className }: SubscribeBoxPro
               aria-selected={method === "whatsapp"}
               aria-label="Suscribirme por WhatsApp"
               title="WhatsApp"
-              disabled={status === "sending" || done}
+              disabled={status === "sending"}
               onClick={() => selectMethod("whatsapp")}
               className={cn(
                 "rounded-full flex items-center justify-center transition-colors duration-200",
@@ -125,7 +126,7 @@ export function SubscribeBox({ variant = "default", className }: SubscribeBoxPro
               aria-selected={method === "email"}
               aria-label="Suscribirme por email"
               title="Email"
-              disabled={status === "sending" || done}
+              disabled={status === "sending"}
               onClick={() => selectMethod("email")}
               className={cn(
                 "rounded-full flex items-center justify-center transition-colors duration-200",
@@ -142,8 +143,8 @@ export function SubscribeBox({ variant = "default", className }: SubscribeBoxPro
 
         <div
           className={cn(
-            "flex gap-2 border border-border/70 bg-background/80 p-1.5 focus-within:border-primary/50 transition-colors",
-            compact ? "flex-col rounded-2xl" : "flex-col sm:flex-row sm:items-center rounded-3xl sm:rounded-full",
+            "flex gap-2 border border-border/70 bg-background/80 focus-within:border-primary/50 transition-colors",
+            compact ? "flex-col rounded-2xl p-2.5 gap-2.5" : "flex-col sm:flex-row sm:items-center rounded-3xl sm:rounded-full p-1.5",
           )}
         >
           {method === "email" ? (
